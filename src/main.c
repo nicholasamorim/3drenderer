@@ -94,6 +94,10 @@ void update(void) {
 
 }
 
+int place_in_buffer(int x, int y) {
+    return (window_width * y) + x;
+}
+
 void render_color_buffer() {
     // Update texture rectangle with new pixel data
     SDL_UpdateTexture(
@@ -110,7 +114,7 @@ void render_color_buffer() {
 void clear_color_buffer(uint32_t color) {
     for (int y = 0; y < window_height; y++) {
         for (int x = 0; x < window_width; x++) {
-            color_buffer[(window_width * y) + x] = color;
+            color_buffer[place_in_buffer(x, y)] = color;
         }
     }
 }
@@ -119,7 +123,7 @@ void draw_grid_as_dots(int grid_size) {
     // increments in `grid_size` for more efficient drawing
     for (int y = 0; y < window_height; y += grid_size) {
         for (int x = 0; x < window_width; x += grid_size) {
-                color_buffer[(window_width * y) + x] = grid_color;
+                color_buffer[place_in_buffer(x, y)] = grid_color;
         }
     }
 }
@@ -128,8 +132,18 @@ void draw_grid_as_lines(int grid_size) {
     for (int y = 0; y < window_height; y++) {
         for (int x = 0; x < window_width; x++) {
             if (x % grid_size == 0 || y % grid_size == 0) {
-                color_buffer[(window_width * y) + x] = grid_color;
+                color_buffer[place_in_buffer(x, y)] = grid_color;
             }
+        }
+    }
+}
+
+void draw_rect(int x, int y, int width, int height, uint32_t color) {
+    for (int i = 0; i < width; i++) {
+        for (int j =0; j < height; j++) {
+            int current_x = x + i;
+            int current_y = y + j;
+            color_buffer[place_in_buffer(current_x, current_y)] = color;
         }
     }
 }
@@ -140,6 +154,7 @@ void render(void) {
     SDL_RenderClear(renderer);
 
     draw_grid_as_lines(30);
+    draw_rect(300, 200, 300, 150, 0xFFFF00FF);
 
     render_color_buffer();
     // clear_color_buffer(0xFFFFFF00);
