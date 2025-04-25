@@ -12,6 +12,7 @@ SDL_Texture* color_buffer_texture = NULL; // used to display color buffer
 
 int window_width = 800;
 int window_height = 600;
+uint32_t grid_color = 0xFF333333;
 
 bool initialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -114,13 +115,34 @@ void clear_color_buffer(uint32_t color) {
     }
 }
 
+void draw_grid_as_dots(int grid_size) {
+    // increments in `grid_size` for more efficient drawing
+    for (int y = 0; y < window_height; y += grid_size) {
+        for (int x = 0; x < window_width; x += grid_size) {
+                color_buffer[(window_width * y) + x] = grid_color;
+        }
+    }
+}
+
+void draw_grid_as_lines(int grid_size) {
+    for (int y = 0; y < window_height; y++) {
+        for (int x = 0; x < window_width; x++) {
+            if (x % grid_size == 0 || y % grid_size == 0) {
+                color_buffer[(window_width * y) + x] = grid_color;
+            }
+        }
+    }
+}
+
 
 void render(void) {
     SDL_SetRenderDrawColor(renderer, 1, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+    draw_grid_as_lines(30);
+
     render_color_buffer();
-    clear_color_buffer(0xFFFFFF00);
+    // clear_color_buffer(0xFFFFFF00);
 
     SDL_RenderPresent(renderer);
 }
