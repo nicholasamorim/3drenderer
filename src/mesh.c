@@ -51,3 +51,16 @@ void load_cube_mesh_data(void) {
         array_push(mesh.faces, cube_face);
     }
 }
+
+void load_obj_file_data(char* filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Cannot read asset\n");
+        return;
+    }
+    char line[1024];
+
+    while (fgets(line, 1024, file)) {
+
+    }
+}

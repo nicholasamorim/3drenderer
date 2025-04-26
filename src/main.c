@@ -38,6 +38,7 @@ bool setup(void) {
     }
 
     load_cube_mesh_data();
+    load_obj_file_data("./assets/cube.obj");
 
     return true;
 }
@@ -89,7 +90,7 @@ void update(void) {
     // }
     while (!SDL_TICKS_PASSED(SDL_GetTicks(), previous_frame_time + FRAME_TARGET_TIME));
     
-    // Time since SDL_Init wa called in ms
+    // Time since SDL_Init was called in ms
     previous_frame_time = SDL_GetTicks();
 
     // Init array of triangles for the frame
@@ -136,7 +137,7 @@ void update(void) {
 
 
 void render(void) {
-    // draw_grid_as_lines(10);
+    // draw_grid_as_lines(50);
     
     // looop projected points and render
     int num_triangles = array_length(triangles_to_render);
