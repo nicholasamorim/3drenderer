@@ -4,13 +4,13 @@
 #include <SDL2/SDL.h>
 #include "display.h"
 #include "vector.h"
+#include "mesh.h"
 
-const int N_POINTS = 9 * 9 * 9;
-vec3_t cube_points[N_POINTS]; // 9x9x9x cube
-vec2_t projected_points[N_POINTS];
+triangle_t triangles_to_render[N_MESH_FACES];
 
 vec3_t camera_position = { .x = 0, .y = 0, .z = -5 };
 vec3_t cube_rotation = { .x = 0, .y = 0, .z = 0 };
+
 float fov_factor = 640;
 
 bool is_running = false;
@@ -33,18 +33,6 @@ bool setup(void) {
     if (!color_buffer) {
         fprintf(stderr, "Cannow create color buffer");
         return false;
-    }
-
-    int point_count = 0;
-    
-    // Load array of vectors
-    for (float x = -1; x <= 1; x += 0.25) {
-        for (float y = -1; y <= 1; y += 0.25) {
-            for (float z = -1; z <= 1; z += 0.25) {
-                vec3_t new_point = { x, y, z };
-                cube_points[point_count++] = new_point;
-            }
-        }
     }
 
     return true;
@@ -76,13 +64,26 @@ vec2_t project(vec3_t point) {
 
 
 void update(void) {
+    /*
+      We still have a small issue.
+      Right now, if we increase our FPS the game objects
+      will move faster, and if we decrease the FPS our 
+      game objects will run slower. 
+      
+      This is fine for now, but we will come back to 
+      this discussion of controlling our framerate very soon. 
+      We'll learn about something called "variable delta-time" 
+      which will help us get framerate-independent movement.
+    */
+
     // Wait until FRAME_TARGET_TIME passes ensuring consistent FPS
-    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
+    // int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
     
-    // Only delay if we're running fast and coming in hot!
-    if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
-        SDL_Delay(time_to_wait);
-    }
+    // // Only delay if we're running fast and coming in hot!
+    // if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
+    //     SDL_Delay(time_to_wait);
+    // }
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), previous_frame_time + FRAME_TARGET_TIME));
     
     // Time since SDL_Init wa called in ms
     previous_frame_time = SDL_GetTicks();
@@ -91,36 +92,51 @@ void update(void) {
     cube_rotation.y += 0.01;
     cube_rotation.z += 0.01;
 
-    for (int i = 0; i < N_POINTS; i++) {
-        vec3_t point = cube_points[i];
+    // Loop over triangle faces
+    for (int i = 0; i < N_MESH_FACES; i++) {
+        face_t mesh_face = mesh_faces[i];
+        
+        vec3_t face_vertices[3];
+        face_vertices[0] = mesh_vertices[mesh_face.a - 1];
+        face_vertices[1] = mesh_vertices[mesh_face.b - 1];
+        face_vertices[2] = mesh_vertices[mesh_face.c - 1];
 
-        vec3_t transformed_point = vec3_rotate_x(point, cube_rotation.x);
-        transformed_point = vec3_rotate_y(transformed_point, cube_rotation.y);
-        transformed_point = vec3_rotate_z(transformed_point, cube_rotation.z);
+        triangle_t projected_triangle;
+    
+        for (int j = 0; j < 3; j++) {
+                vec3_t transformed_vertex = face_vertices[j];
 
-        // Translate points away from camera
-        transformed_point.z -= camera_position.z;
+                transformed_vertex = vec3_rotate_x(transformed_vertex, cube_rotation.x);
+                transformed_vertex = vec3_rotate_y(transformed_vertex, cube_rotation.y);
+                transformed_vertex = vec3_rotate_z(transformed_vertex, cube_rotation.z);
 
-        vec2_t projected_point = project(transformed_point);
-        // save projected 2d vector in array of projected points
-        projected_points[i] = projected_point;
+                transformed_vertex.z -= camera_position.z;
+                
+                vec2_t projected_point = project(transformed_vertex);
+
+                // Scale and translarte the proj point to the middle of the screen
+                projected_point.x += (window_width / 2);
+                projected_point.y += (window_height / 2);
+
+                projected_triangle.points[j] = projected_point;
+        }
+    
+        // Save projected triangle in the array of triangles to render
+    triangles_to_render[i] = projected_triangle;
     }
+
 }
 
 
 void render(void) {
-    draw_grid_as_lines(50);
+    draw_grid_as_lines(10);
     
     // looop projected points and render
-    for (int i = 0; i < N_POINTS; i++ ) {
-        vec2_t projected_point = projected_points[i];
-        draw_rect(
-            projected_point.x + (window_width / 2), 
-            projected_point.y + (window_height / 2),
-            4,
-            4,
-            0xFFFFFF00
-        );
+    for (int i = 0; i < N_MESH_FACES; i++) {
+        triangle_t triangle = triangles_to_render[i];
+        draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, 0xFFFFFF00);
+        draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, 0xFFFFFF00);
+        draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, 0xFFFFFF00);
     }
 
     render_color_buffer();
