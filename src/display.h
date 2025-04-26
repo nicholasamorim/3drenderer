@@ -28,5 +28,6 @@ void destroy_window(void);
 void clear_color_buffer(uint32_t color);
 int place_in_buffer(int x, int y);
 void draw_pixel(int x, int y, uint32_t color);
+void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
 
 #endif
