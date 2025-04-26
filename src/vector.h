@@ -20,6 +20,7 @@ typedef struct {
 } camera_t;
 
 
-vec3_t vec3_rotate(vec3_t v, float angle);
-
+vec3_t vec3_rotate_z(vec3_t v, float angle);
+vec3_t vec3_rotate_y(vec3_t v, float angle);
+vec3_t vec3_rotate_x(vec3_t v, float angle);
 #endif
