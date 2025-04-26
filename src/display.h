@@ -24,5 +24,6 @@ void render_color_buffer(void);
 void destroy_window(void);
 void clear_color_buffer(uint32_t color);
 int place_in_buffer(int x, int y);
+void draw_pixel(int x, int y, uint32_t color);
 
 #endif

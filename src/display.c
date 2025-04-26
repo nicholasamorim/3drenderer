@@ -55,6 +55,12 @@ int place_in_buffer(int x, int y) {
     return (window_width * y) + x;
 }
 
+void draw_pixel(int x, int y, uint32_t color) {
+    if (x < window_width && y < window_height) {
+        color_buffer[place_in_buffer(x, y)] = color;
+    }
+}
+
 void draw_grid_as_dots(int grid_size) {
     // increments in `grid_size` for more efficient drawing
     for (int y = 0; y < window_height; y += grid_size) {
