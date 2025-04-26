@@ -19,6 +19,7 @@ typedef struct {
     float fov_angle;
 } camera_t;
 
-// todo: add functions to manipulate vectors 2d and 3d
+
+vec3_t vec3_rotate(vec3_t v, float angle);
 
 #endif

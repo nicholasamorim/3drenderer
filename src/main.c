@@ -14,6 +14,7 @@ float fov_factor = 640;
 
 bool is_running = false;
 
+
 bool setup(void) {
     // Allocate required bytes for the color buffer
     color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
@@ -63,7 +64,6 @@ void process_input(void) {
     }
 }
 
-
 vec2_t project(vec3_t point) {
     vec2_t projected_point = { 
         fov_factor * point.x / point.z, 
@@ -71,6 +71,7 @@ vec2_t project(vec3_t point) {
     };    
     return projected_point;
 }
+
 
 void update(void) {
     for (int i = 0; i < N_POINTS; i++) {
@@ -84,6 +85,7 @@ void update(void) {
         projected_points[i] = projected_point;
     }
 }
+
 
 void render(void) {
     // draw_grid_as_lines(10);
@@ -105,6 +107,7 @@ void render(void) {
 
     SDL_RenderPresent(renderer);
 }
+
 
 int main(void) {
     is_running = initialize_window();
