@@ -113,21 +113,21 @@ void update(void) {
         triangle_t projected_triangle;
     
         for (int j = 0; j < 3; j++) {
-                vec3_t transformed_vertex = face_vertices[j];
+            vec3_t transformed_vertex = face_vertices[j];
 
-                transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotation.x);
-                transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotation.y);
-                transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotation.z);
+            transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotation.x);
+            transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotation.y);
+            transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotation.z);
 
-                transformed_vertex.z -= camera_position.z;
-                
-                vec2_t projected_point = project(transformed_vertex);
+            transformed_vertex.z -= camera_position.z;
+            
+            vec2_t projected_point = project(transformed_vertex);
 
-                // Scale and translarte the proj point to the middle of the screen
-                projected_point.x += (window_width / 2);
-                projected_point.y += (window_height / 2);
+            // Scale and translarte the proj point to the middle of the screen
+            projected_point.x += (window_width / 2);
+            projected_point.y += (window_height / 2);
 
-                projected_triangle.points[j] = projected_point;
+            projected_triangle.points[j] = projected_point;
         }
     
         // Save projected triangle in the array of triangles to render
