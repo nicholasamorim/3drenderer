@@ -37,8 +37,7 @@ bool setup(void) {
         return false;
     }
 
-    load_cube_mesh_data();
-    load_obj_file_data("./assets/cube.obj");
+    load_obj_file_data("./assets/f22.obj");
 
     return true;
 }
