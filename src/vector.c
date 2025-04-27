@@ -74,3 +74,41 @@ vec3_t vec3_sub(vec3_t v1, vec3_t v2) {
 
     return vec;
 }
+
+vec2_t vec2_mul(vec2_t v, float factor) {
+    vec2_t vec = {
+        v.x * factor,
+        v.y * factor
+    };
+
+    return vec;
+}
+
+vec2_t vec2_div(vec2_t v, float factor) {
+    vec2_t vec = {
+        v.x / factor,
+        v.y / factor
+    };
+
+    return vec;
+}
+
+vec3_t vec3_mul(vec3_t v, float factor) {
+    vec3_t vec = {
+        v.x * factor,
+        v.y * factor,
+        v.z * factor
+    };
+
+    return vec;
+}
+
+vec3_t vec3_div(vec3_t v, float factor) {
+    vec3_t vec = {
+        v.x / factor,
+        v.y / factor,
+        v.z / factor
+    };
+
+    return vec;
+}

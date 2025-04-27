@@ -30,4 +30,9 @@ vec3_t vec3_add(vec3_t v1, vec3_t v2);
 vec2_t vec2_sub(vec2_t v1, vec2_t v2);
 vec3_t vec3_sub(vec3_t v1, vec3_t v2);
 
+vec2_t vec2_mul(vec2_t v, float factor);
+vec2_t vec2_div(vec2_t v, float factor);
+vec3_t vec3_mul(vec3_t v, float factor);
+vec3_t vec3_div(vec3_t v, float factor);
+
 #endif
