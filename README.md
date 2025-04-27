@@ -1,13 +1,21 @@
 # 3drenderer
 Learning how to write a 3D Renderer
 
-Progress - Day 2
+Studying math just for the sake of it never worked for me.
 
+This is a study project on writing a simple renderer using only C and SDL2. The goal is to write a complete software rasterizer from scratch: textures, camera, clipping, loading objects all pixel per pixel, triangle by triangle and face by face.
+
+My personal goal is to understand the basics of the math underlying the 3D world (vectors, matrices) so to apply this knowledge in packages like Houdini and be able to perform complex operations using VEX. 
+
+
+# Progress
+
+## Day 2
 ![A point cloud of points in the shape of a cube rotating in space](docs/images/progress_day_2.gif)
 
 ![A wireframe the shape of a cube rotating in space](docs/images/progress_day_2_wireframe.gif)
 
-Progress - Day 3
+## Day 3
 
 Now loading meshes from .OBJ files.
 

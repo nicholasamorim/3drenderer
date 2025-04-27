@@ -96,8 +96,8 @@ void update(void) {
     triangles_to_render = NULL;
 
     mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.01;
-    mesh.rotation.z += 0.01;
+    mesh.rotation.y += 0.00;
+    mesh.rotation.z += 0.00;
 
     // Loop over triangle faces
     int num_faces = array_length(mesh.faces);
