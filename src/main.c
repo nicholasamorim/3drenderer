@@ -138,7 +138,7 @@ void update(void) {
 void render(void) {
     // draw_grid_as_lines(50);
     
-    // looop projected points and render
+    // loop projected points and render
     int num_triangles = array_length(triangles_to_render);
     for (int i = 0; i < num_triangles; i++) {
         triangle_t triangle = triangles_to_render[i];
