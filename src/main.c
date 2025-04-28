@@ -134,6 +134,7 @@ void update(void) {
         // this case is left handiness. Z is positive as it goes
         // further and further away from the camera
         vec3_t normal = vec3_cross(b_a, c_a);
+        vec3_normalize(&normal);
 
         vec3_t camera_ray = vec3_sub(camera_position, a);
         // if the normal is pointing away from the camera, this will
