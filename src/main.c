@@ -96,8 +96,8 @@ void update(void) {
     triangles_to_render = NULL;
 
     mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.00;
-    mesh.rotation.z += 0.00;
+    mesh.rotation.y += 0.01;
+    mesh.rotation.z += 0.01;
 
     // Loop over triangle faces
     int num_faces = array_length(mesh.faces);
@@ -129,6 +129,8 @@ void update(void) {
 
         vec3_t b_a = vec3_sub(b, a);
         vec3_t c_a = vec3_sub(c, a);
+        vec3_normalize(&b_a);
+        vec3_normalize(&c_a);
 
         // handiness has to do with the order, the order matters
         // this case is left handiness. Z is positive as it goes
@@ -178,16 +180,23 @@ void render(void) {
         draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, 0xFFFFFF00);
         
         // Draw triangle faces
+        draw_filled_triangle(
+            triangle.points[0].x, triangle.points[0].y, 
+            triangle.points[1].x, triangle.points[1].y,
+            triangle.points[2].x, triangle.points[2].y,
+            0xFFFFFFFF
+        );
+
+        // Draw wireframe
         draw_triangle(
-            triangle.points[0].x, 
-            triangle.points[0].y, 
-            triangle.points[1].x,
-            triangle.points[1].y,
-            triangle.points[2].x,
-            triangle.points[2].y,
-            0xFF00FF00
+            triangle.points[0].x, triangle.points[0].y, 
+            triangle.points[1].x, triangle.points[1].y,
+            triangle.points[2].x, triangle.points[2].y,
+            0xFF000000
         );
     }
+
+    // draw_filled_triangle(300, 100, 50, 400, 500, 700, 0xFF00FF00);
 
     // Clear array of triangles to render every loop
     array_free(triangles_to_render);
