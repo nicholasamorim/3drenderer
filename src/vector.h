@@ -35,4 +35,6 @@ vec2_t vec2_div(vec2_t v, float factor);
 vec3_t vec3_mul(vec3_t v, float factor);
 vec3_t vec3_div(vec3_t v, float factor);
 
+vec3_t vec3_cross(vec3_t v1, vec3_t v2);
+float vec3_dot(vec3_t v1, vec3_t v2);
 #endif
