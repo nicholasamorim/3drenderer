@@ -99,6 +99,21 @@ vec2_t project(vec3_t point) {
     return projected_point;
 }
 
+void sort_by_depth(triangle_t* array) {
+    int num_triangles = array_length(array);
+
+    // Bubble sort by avg depth
+    for (int i = 0; i < num_triangles; ++i) {
+        for (int j = i; j < num_triangles; j++) {
+            if (array[i].avg_depth < array[j].avg_depth) {
+                triangle_t temp = triangles_to_render[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+    }
+}
+
 
 void update(void) {
     /*
@@ -144,6 +159,7 @@ void update(void) {
 
         vec3_t transformed_vertices[3];
     
+        // Apply transformations
         for (int j = 0; j < 3; j++) {
             vec3_t transformed_vertex = face_vertices[j];
 
@@ -165,37 +181,55 @@ void update(void) {
         vec3_normalize(&b_a);
         vec3_normalize(&c_a);
 
-        // handiness has to do with the order, the order matters
-        // this case is left handiness. Z is positive as it goes
-        // further and further away from the camera
-        vec3_t normal = vec3_cross(b_a, c_a);
-        vec3_normalize(&normal);
+        if (cull_mode == CULL_BACKFACE) {
+            // handiness has to do with the order, the order matters
+            // this case is left handiness. Z is positive as it goes
+            // further and further away from the camera
+            vec3_t normal = vec3_cross(b_a, c_a);
+            vec3_normalize(&normal);
 
-        vec3_t camera_ray = vec3_sub(camera_position, a);
-        // if the normal is pointing away from the camera, this will
-        // return a negative value
-        float dot_normal_camera = vec3_dot(normal, camera_ray);
+            vec3_t camera_ray = vec3_sub(camera_position, a);
+            // if the normal is pointing away from the camera, this will
+            // return a negative value
+            float dot_normal_camera = vec3_dot(normal, camera_ray);
 
-        if (cull_mode == CULL_BACKFACE && dot_normal_camera < 0 ) {
-            // do not render if projected away from camera
-            continue;
+            if (dot_normal_camera < 0 ) {
+                continue;  // do not render if projected away from camera
+            }
         }
 
-        triangle_t projected_triangle;
-
+        vec2_t projected_points[3];
         for (int j = 0; j < 3; j++) {
-            vec2_t projected_point = project(transformed_vertices[j]);
+            projected_points[j] = project(transformed_vertices[j]);
 
             // Scale and translarte the proj point to the middle of the screen
-            projected_point.x += (window_width / 2);
-            projected_point.y += (window_height / 2);
-
-            projected_triangle.points[j] = projected_point;
+            projected_points[j].x += (window_width / 2);
+            projected_points[j].y += (window_height / 2);
         }
+
+        // Calculate average depth for each face based on their Z values
+        float avg_depth = (
+            transformed_vertices[0].z + 
+            transformed_vertices[1].z + 
+            transformed_vertices[2].z) / 3;
+
+        triangle_t projected_triangle = {
+            .points = {
+                { projected_points[0].x, projected_points[0].y },
+                { projected_points[1].x, projected_points[1].y },
+                { projected_points[2].x, projected_points[2].y },
+            },
+            .color = mesh_face.color,
+            .avg_depth = avg_depth
+        };
     
         // Save projected triangle in the array of triangles to render
-    array_push(triangles_to_render, projected_triangle);
+        array_push(triangles_to_render, projected_triangle);
     }
+
+    // Sort the triangles to render by their avg_depth
+    sort_by_depth(triangles_to_render);
+
 }
 
 void draw_wireframe(triangle_t triangle, uint32_t color) {
