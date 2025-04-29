@@ -235,12 +235,12 @@ void render(void) {
                 triangle.points[0].x, triangle.points[0].y, 
                 triangle.points[1].x, triangle.points[1].y,
                 triangle.points[2].x, triangle.points[2].y,
-                WHITE
+                GRAY
             );
         }
 
         if (rm == RENDER_WIRE || rm == RENDER_WIRE_VERTEX || rm == RENDER_WIRE_SOLID) {
-            draw_wireframe(triangle, GREEN);
+            draw_wireframe(triangle, WHITE);
         }
 
         if (rm == RENDER_WIRE_VERTEX) {
