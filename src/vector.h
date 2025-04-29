@@ -11,6 +11,10 @@ typedef struct {
 } vec3_t;
 
 typedef struct {
+    float x, y, z, w;
+} vec4_t;
+
+typedef struct {
     vec3_t position;
     vec3_t rotation;
     float fov_angle;
@@ -40,4 +44,7 @@ float vec3_dot(vec3_t v1, vec3_t v2);
 
 void vec2_normalize(vec2_t* v);
 void vec3_normalize(vec3_t* v);
+
+vec4_t vec4_from_vec3(vec3_t v);
+vec3_t vec3_from_vec4(vec4_t v);
 #endif
