@@ -18,6 +18,18 @@ float fov_factor = 640;
 bool is_running = false;
 int previous_frame_time = 0;
 
+enum Render_Modes {
+    WIREFRAME_VERTEX,
+    WIREFRAME_ONLY,
+    SOLID,
+    WIREFRAME_SOLID
+};
+
+enum Render_Modes render_mode = WIREFRAME_ONLY;
+
+
+bool backface_culling =  true;
+
 
 bool setup(void) {
     // Allocate required bytes for the color buffer
@@ -52,8 +64,23 @@ void process_input(void) {
             is_running = false;
             break;
         case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_ESCAPE)
+            if (event.key.keysym.sym == SDLK_ESCAPE) {
                 is_running = false;
+            }
+            else if (event.key.keysym.sym == SDLK_1) 
+                render_mode = WIREFRAME_VERTEX;
+                else if (event.key.keysym.sym == SDLK_2) 
+                render_mode = WIREFRAME_ONLY;
+                else if (event.key.keysym.sym == SDLK_3) 
+                render_mode = SOLID;
+                else if (event.key.keysym.sym == SDLK_4) 
+                render_mode = WIREFRAME_SOLID;
+            else if (event.key.keysym.sym == SDLK_c) {
+                backface_culling = true;
+            }
+            else if (event.key.keysym.sym == SDLK_d) {
+                backface_culling = false;
+            };
             break;
     }
 }
@@ -165,6 +192,20 @@ void update(void) {
     }
 }
 
+void draw_wireframe(triangle_t triangle, uint32_t color) {
+    draw_triangle(
+        triangle.points[0].x, triangle.points[0].y, 
+        triangle.points[1].x, triangle.points[1].y,
+        triangle.points[2].x, triangle.points[2].y,
+        color
+    );
+}
+
+void draw_vertex_points(triangle_t triangle, uint32_t color) {
+    draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, color);
+    draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, color);
+    draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, color);
+}
 
 void render(void) {
     draw_grid_as_lines(50);
@@ -173,27 +214,36 @@ void render(void) {
     int num_triangles = array_length(triangles_to_render);
     for (int i = 0; i < num_triangles; i++) {
         triangle_t triangle = triangles_to_render[i];
-        
-        // Draw vertex points
-        draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, 0xFFFFFF00);
-        draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, 0xFFFFFF00);
-        draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, 0xFFFFFF00);
-        
-        // Draw triangle faces
-        draw_filled_triangle(
-            triangle.points[0].x, triangle.points[0].y, 
-            triangle.points[1].x, triangle.points[1].y,
-            triangle.points[2].x, triangle.points[2].y,
-            0xFFFFFFFF
-        );
 
-        // Draw wireframe
-        draw_triangle(
-            triangle.points[0].x, triangle.points[0].y, 
-            triangle.points[1].x, triangle.points[1].y,
-            triangle.points[2].x, triangle.points[2].y,
-            0xFF000000
-        );
+        enum Render_Modes {
+            WIREFRAME_VERTEX,
+            WIREFRAME_ONLY,
+            SOLID,
+            WIREFRAME_SOLID
+        };
+
+        int rm = (int)render_mode;
+        if (rm == WIREFRAME_ONLY) {
+            draw_wireframe(triangle, 0x0000FF00);
+        } else if (rm == WIREFRAME_SOLID) {
+            draw_wireframe(triangle, 0xFF000000);
+            draw_filled_triangle(
+                triangle.points[0].x, triangle.points[0].y, 
+                triangle.points[1].x, triangle.points[1].y,
+                triangle.points[2].x, triangle.points[2].y,
+                0xFFFFFFFF
+            );
+        } else if (rm == SOLID) {
+            draw_filled_triangle(
+                triangle.points[0].x, triangle.points[0].y, 
+                triangle.points[1].x, triangle.points[1].y,
+                triangle.points[2].x, triangle.points[2].y,
+                0xFFFFFFFF
+            );
+        } else if (rm == WIREFRAME_VERTEX) {
+            draw_wireframe(triangle, 0x0000FF00);
+            draw_vertex_points(triangle, 0xFFFFFF00);
+        }
     }
 
     // draw_filled_triangle(300, 100, 50, 400, 500, 700, 0xFF00FF00);
