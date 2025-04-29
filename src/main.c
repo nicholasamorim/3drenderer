@@ -208,9 +208,9 @@ void draw_wireframe(triangle_t triangle, uint32_t color) {
 }
 
 void draw_vertex_points(triangle_t triangle, uint32_t color) {
-    draw_rect(triangle.points[0].x, triangle.points[0].y, 3, 3, color);
-    draw_rect(triangle.points[1].x, triangle.points[1].y, 3, 3, color);
-    draw_rect(triangle.points[2].x, triangle.points[2].y, 3, 3, color);
+    draw_rect(triangle.points[0].x - 3 , triangle.points[0].y - 3, 6, 6, color);
+    draw_rect(triangle.points[1].x - 3, triangle.points[1].y - 3, 6, 6, color);
+    draw_rect(triangle.points[2].x - 3, triangle.points[2].y - 3, 6, 6, color);
 }
 
 void render(void) {
@@ -229,26 +229,22 @@ void render(void) {
         };
 
         int rm = (int)render_mode;
-        if (rm == WIREFRAME_ONLY) {
-            draw_wireframe(triangle, 0x0000FF00);
-        } else if (rm == WIREFRAME_SOLID) {
-            draw_wireframe(triangle, 0xFF000000);
+
+        if (rm == RENDER_SOLID || rm == RENDER_WIRE_SOLID) {
             draw_filled_triangle(
                 triangle.points[0].x, triangle.points[0].y, 
                 triangle.points[1].x, triangle.points[1].y,
                 triangle.points[2].x, triangle.points[2].y,
                 0xFFFFFFFF
             );
-        } else if (rm == SOLID) {
-            draw_filled_triangle(
-                triangle.points[0].x, triangle.points[0].y, 
-                triangle.points[1].x, triangle.points[1].y,
-                triangle.points[2].x, triangle.points[2].y,
-                0xFFFFFFFF
-            );
-        } else if (rm == WIREFRAME_VERTEX) {
+        }
+
+        if (rm == RENDER_WIRE || rm == RENDER_WIRE_VERTEX || rm == RENDER_WIRE_SOLID) {
             draw_wireframe(triangle, 0x0000FF00);
-            draw_vertex_points(triangle, 0xFFFFFF00);
+        }
+
+        if (rm == RENDER_WIRE_VERTEX) {
+            draw_vertex_points(triangle, 0xFFFF0000);
         }
     }
 
