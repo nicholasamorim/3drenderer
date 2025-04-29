@@ -20,3 +20,9 @@ My personal goal is to understand the basics of the math underlying the 3D world
 Now loading meshes from .OBJ files.
 
 ![A wireframe the shape of a cube rotating in space](docs/images/progress_day_3_f22.gif)
+
+## Day 4/5
+
+Different rendering modes using keystrokes as well as backface culling implemented. Naive Painter's algorithm for z-buffer.
+
+![A wireframe the shape of a cube rotating in space](docs/images/progress_day_5.gif)
