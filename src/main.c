@@ -18,14 +18,20 @@ float fov_factor = 640;
 bool is_running = false;
 int previous_frame_time = 0;
 
-enum Render_Modes {
-    WIREFRAME_VERTEX,
-    WIREFRAME_ONLY,
-    SOLID,
-    WIREFRAME_SOLID
+enum render_modes {
+    RENDER_WIRE,
+    RENDER_WIRE_VERTEX,
+    RENDER_WIRE_SOLID,
+    RENDER_SOLID,
 };
 
-enum Render_Modes render_mode = WIREFRAME_ONLY;
+enum cull_modes {
+    CULL_NONE, 
+    CULL_BACKFACE
+};
+
+enum render_modes render_mode = RENDER_WIRE;
+enum cull_modes cull_mode = CULL_BACKFACE;
 
 
 bool backface_culling =  true;
@@ -68,18 +74,18 @@ void process_input(void) {
                 is_running = false;
             }
             else if (event.key.keysym.sym == SDLK_1) 
-                render_mode = WIREFRAME_VERTEX;
+                render_mode = RENDER_WIRE_VERTEX;
                 else if (event.key.keysym.sym == SDLK_2) 
-                render_mode = WIREFRAME_ONLY;
+                render_mode = RENDER_WIRE;
                 else if (event.key.keysym.sym == SDLK_3) 
-                render_mode = SOLID;
+                render_mode = RENDER_SOLID;
                 else if (event.key.keysym.sym == SDLK_4) 
-                render_mode = WIREFRAME_SOLID;
+                render_mode = RENDER_WIRE_SOLID;
             else if (event.key.keysym.sym == SDLK_c) {
-                backface_culling = true;
+                cull_mode = CULL_BACKFACE;
             }
             else if (event.key.keysym.sym == SDLK_d) {
-                backface_culling = false;
+                cull_mode = CULL_NONE;
             };
             break;
     }
@@ -170,7 +176,7 @@ void update(void) {
         // return a negative value
         float dot_normal_camera = vec3_dot(normal, camera_ray);
 
-        if (dot_normal_camera < 0) {
+        if (cull_mode == CULL_BACKFACE && dot_normal_camera < 0 ) {
             // do not render if projected away from camera
             continue;
         }
