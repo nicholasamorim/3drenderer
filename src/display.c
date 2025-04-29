@@ -1,3 +1,4 @@
+#include "color.h"
 #include "display.h"
 
 SDL_Window* window = NULL;
@@ -8,7 +9,7 @@ SDL_Texture* color_buffer_texture = NULL;
 
 int window_width = 800;
 int window_height = 600;
-uint32_t grid_color = 0xFF444444;
+
 
 bool initialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -95,7 +96,7 @@ void draw_grid_as_dots(int grid_size) {
     // increments in `grid_size` for more efficient drawing
     for (int y = 0; y < window_height; y += grid_size) {
         for (int x = 0; x < window_width; x += grid_size) {
-                color_buffer[place_in_buffer(x, y)] = grid_color;
+                color_buffer[place_in_buffer(x, y)] = GRAY;
         }
     }
 }
@@ -104,7 +105,7 @@ void draw_grid_as_lines(int grid_size) {
     for (int y = 0; y < window_height; y++) {
         for (int x = 0; x < window_width; x++) {
             if (x % grid_size == 0 || y % grid_size == 0) {
-                color_buffer[place_in_buffer(x, y)] = grid_color;
+                color_buffer[place_in_buffer(x, y)] = GRAY;
             }
         }
     }

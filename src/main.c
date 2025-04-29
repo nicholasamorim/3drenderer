@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include "array.h"
+#include "color.h"
 #include "display.h"
 #include "vector.h"
 #include "mesh.h"
@@ -35,7 +36,6 @@ enum cull_modes cull_mode = CULL_BACKFACE;
 
 
 bool backface_culling =  true;
-
 
 bool setup(void) {
     // Allocate required bytes for the color buffer
@@ -235,16 +235,16 @@ void render(void) {
                 triangle.points[0].x, triangle.points[0].y, 
                 triangle.points[1].x, triangle.points[1].y,
                 triangle.points[2].x, triangle.points[2].y,
-                0xFFFFFFFF
+                WHITE
             );
         }
 
         if (rm == RENDER_WIRE || rm == RENDER_WIRE_VERTEX || rm == RENDER_WIRE_SOLID) {
-            draw_wireframe(triangle, 0x0000FF00);
+            draw_wireframe(triangle, GREEN);
         }
 
         if (rm == RENDER_WIRE_VERTEX) {
-            draw_vertex_points(triangle, 0xFFFF0000);
+            draw_vertex_points(triangle, RED);
         }
     }
 
@@ -254,7 +254,7 @@ void render(void) {
     array_free(triangles_to_render);
 
     render_color_buffer();
-    clear_color_buffer(0xFF000000);
+    clear_color_buffer(BLACK);
 
     SDL_RenderPresent(renderer);
 }
