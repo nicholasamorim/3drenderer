@@ -5,6 +5,7 @@
 #include "array.h"
 #include "color.h"
 #include "display.h"
+#include "light.h"
 #include "vector.h"
 #include "matrix.h"
 #include "mesh.h"
@@ -61,7 +62,8 @@ bool setup(void) {
     float zfar = 100.0;
     projection_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
-    load_obj_file_data("./assets/cube.obj");
+    // load_obj_file_data("./assets/cube.obj");
+    load_obj_file_data("./assets/f22.obj");
 
     return true;
 }
@@ -115,36 +117,23 @@ void sort_by_depth(triangle_t* array) {
 
 
 void update(void) {
-    /*
-      We still have a small issue.
-      Right now, if we increase our FPS the game objects
-      will move faster, and if we decrease the FPS our 
-      game objects will run slower. 
-      
-      This is fine for now, but we will come back to 
-      this discussion of controlling our framerate very soon. 
-      We'll learn about something called "variable delta-time" 
-      which will help us get framerate-independent movement.
-    */
-
     // Wait until FRAME_TARGET_TIME passes ensuring consistent FPS
     // int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
-    
-    // // Only delay if we're running fast and coming in hot!
-    // if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
-    //     SDL_Delay(time_to_wait);
-    // }
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), previous_frame_time + FRAME_TARGET_TIME));
-    
-    // Time since SDL_Init was called in ms
+    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
+
+    // Only delay execution if we are running too fast
+    if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
+        SDL_Delay(time_to_wait);
+    }
+
     previous_frame_time = SDL_GetTicks();
 
     // Init array of triangles for the frame
     triangles_to_render = NULL;
 
     // Test transformations
-    mesh.rotation.x += 0.01;
-    // mesh.rotation.y += 0.01;
+    mesh.rotation.x += 0.005;
+    mesh.rotation.y += 0.01;
     // mesh.rotation.z += 0.01;
     // mesh.translation.x += 0.01;
     mesh.translation.z = 5.0;
@@ -185,27 +174,27 @@ void update(void) {
             transformed_vertices[j] = transformed_vertex;
         }
 
+        vec3_t a = vec3_from_vec4(transformed_vertices[0]);
+        vec3_t b = vec3_from_vec4(transformed_vertices[1]);
+        vec3_t c = vec3_from_vec4(transformed_vertices[2]);
+
+        vec3_t b_a = vec3_sub(b, a);
+        vec3_t c_a = vec3_sub(c, a);
+        vec3_normalize(&b_a);
+        vec3_normalize(&c_a);
+
+        // handiness has to do with the order, the order matters
+        // this case is left handiness. Z is positive as it goes
+        // further and further away from the camera
+        vec3_t normal = vec3_cross(b_a, c_a);
+        vec3_normalize(&normal);
+
+        vec3_t camera_ray = vec3_sub(camera_position, a);
+        // if the normal is pointing away from the camera, this will
+        // return a negative value
+        float dot_normal_camera = vec3_dot(normal, camera_ray);
+    
         if (cull_mode == CULL_BACKFACE) {
-            vec3_t a = vec3_from_vec4(transformed_vertices[0]);
-            vec3_t b = vec3_from_vec4(transformed_vertices[1]);
-            vec3_t c = vec3_from_vec4(transformed_vertices[2]);
-
-            vec3_t b_a = vec3_sub(b, a);
-            vec3_t c_a = vec3_sub(c, a);
-            vec3_normalize(&b_a);
-            vec3_normalize(&c_a);
-
-            // handiness has to do with the order, the order matters
-            // this case is left handiness. Z is positive as it goes
-            // further and further away from the camera
-            vec3_t normal = vec3_cross(b_a, c_a);
-            vec3_normalize(&normal);
-
-            vec3_t camera_ray = vec3_sub(camera_position, a);
-            // if the normal is pointing away from the camera, this will
-            // return a negative value
-            float dot_normal_camera = vec3_dot(normal, camera_ray);
-
             if (dot_normal_camera < 0 ) {
                 continue;  // do not render if projected away from camera
             }
@@ -214,6 +203,9 @@ void update(void) {
         vec4_t projected_points[3];
         for (int j = 0; j < 3; j++) {
             projected_points[j] = mat4_mul_vec4_project(projection_matrix, transformed_vertices[j]);
+
+            // Flip vertically since the y values of the 3D mesh grow bottom->up and in screen space y values grow top->down
+            projected_points[j].y *= -1;
 
             // Scale into view
             projected_points[j].x *= (window_width / 2.0);
@@ -228,15 +220,19 @@ void update(void) {
         float avg_depth = (
             transformed_vertices[0].z + 
             transformed_vertices[1].z + 
-            transformed_vertices[2].z) / 3;
+            transformed_vertices[2].z) / 3.0;
 
+        // Calculate color based on light angle
+        float light_intensity_factor = -vec3_dot(normal, light.direction);
+        uint32_t triangle_color = light_apply_intensity(mesh_face.color, light_intensity_factor);
+            
         triangle_t projected_triangle = {
             .points = {
                 { projected_points[0].x, projected_points[0].y },
                 { projected_points[1].x, projected_points[1].y },
                 { projected_points[2].x, projected_points[2].y },
             },
-            .color = mesh_face.color,
+            .color = triangle_color,
             .avg_depth = avg_depth
         };
     
@@ -286,7 +282,7 @@ void render(void) {
                 triangle.points[0].x, triangle.points[0].y, 
                 triangle.points[1].x, triangle.points[1].y,
                 triangle.points[2].x, triangle.points[2].y,
-                GRAY
+                triangle.color
             );
         }
 
@@ -298,8 +294,6 @@ void render(void) {
             draw_vertex_points(triangle, RED);
         }
     }
-
-    // draw_filled_triangle(300, 100, 50, 400, 500, 700, 0xFF00FF00);
 
     // Clear array of triangles to render every loop
     array_free(triangles_to_render);

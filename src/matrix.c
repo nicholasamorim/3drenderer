@@ -101,6 +101,8 @@ vec4_t mat4_mul_vec4_project(mat4_t mat_proj, vec4_t v) {
     // multiply projection matrix
     vec4_t result = mat4_mul_vec4(mat_proj, v);
 
+    // TODO: Add clipping
+
     // perform perspective divide with original z-value
     if (result.w != 0.0) {
         result.x /= result.w;
@@ -110,3 +112,4 @@ vec4_t mat4_mul_vec4_project(mat4_t mat_proj, vec4_t v) {
 
     return result;
 }
+

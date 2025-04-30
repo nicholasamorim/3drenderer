@@ -26,3 +26,10 @@ Now loading meshes from .OBJ files.
 Different rendering modes using keystrokes as well as backface culling implemented. Naive Painter's algorithm for z-buffer.
 
 ![A wireframe the shape of a cube rotating in space](docs/images/progress_day_5.gif)
+
+## Day 6
+
+Transformations are now performed using matrices instead of linear calculations. Added flat shading based on a single global illumination light.
+
+
+![Flat shading](docs/images/progress_day_6.gif)
