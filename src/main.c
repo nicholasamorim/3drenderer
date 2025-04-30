@@ -149,10 +149,14 @@ void update(void) {
     mesh.rotation.z += 0.01;
     mesh.translation.x += 0.01;
     mesh.translation.z = 5.0;
-    mesh.scale.x += 0.0002;
+    // mesh.scale.x += 0.0002;
 
     mat4_t scale_matrix = mat4_make_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
     mat4_t translation_matrix = mat4_make_translation(mesh.translation.x, mesh.translation.y, mesh.translation.z);
+
+    mat4_t rotation_matrix_x = mat4_make_rotation_x(mesh.rotation.x);
+    mat4_t rotation_matrix_y = mat4_make_rotation_x(mesh.rotation.y);
+    mat4_t rotation_matrix_z = mat4_make_rotation_x(mesh.rotation.z);
 
     // Loop over triangle faces
     int num_faces = array_length(mesh.faces);
@@ -171,6 +175,9 @@ void update(void) {
             vec4_t transformed_vertex = vec4_from_vec3(face_vertices[j]);
 
             transformed_vertex = mat4_mul_vec4(scale_matrix, transformed_vertex);
+            transformed_vertex = mat4_mul_vec4(rotation_matrix_x, transformed_vertex);
+            transformed_vertex = mat4_mul_vec4(rotation_matrix_y, transformed_vertex);
+            transformed_vertex = mat4_mul_vec4(rotation_matrix_z, transformed_vertex);
             transformed_vertex = mat4_mul_vec4(translation_matrix, transformed_vertex);
 
             transformed_vertices[j] = transformed_vertex;
