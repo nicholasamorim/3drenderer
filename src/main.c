@@ -48,6 +48,7 @@ bool backface_culling =  true;
 bool setup(void) {
     // Allocate required bytes for the color buffer
     color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
+    z_buffer = (float *)malloc(sizeof(float) * window_width * window_height);
     
     // Create a SDL Texture for the color display
     color_buffer_texture = SDL_CreateTexture(
@@ -306,13 +307,16 @@ void render(void) {
     array_free(triangles_to_render);
 
     render_color_buffer();
+
     clear_color_buffer(BLACK);
+    clear_z_buffer();
 
     SDL_RenderPresent(renderer);
 }
 
 void free_resources(void) {
     free(color_buffer);
+    free(z_buffer);
     array_free(mesh.faces);
     array_free(mesh.vertices);
     upng_free(png);

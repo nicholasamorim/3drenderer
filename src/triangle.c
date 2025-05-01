@@ -171,11 +171,18 @@ void draw_texel(
     interpolated_v /= interpolated_reciprocal_w;
     
     // Map/scale UV coordinate to the full texture width/height
-
     int tex_x = abs((int)(interpolated_u * texture_width)) % texture_width;
     int tex_y = abs((int)(interpolated_v * texture_height)) % texture_height;
 
-    draw_pixel(x, y, texture[(texture_width * tex_y) + tex_x]);
+    // Adjust 1/w so the pixels that are closer to the camera have smaller values
+    interpolated_reciprocal_w = 1.0 - interpolated_reciprocal_w;
+
+    if (interpolated_reciprocal_w < z_buffer[place_in_buffer(x, y)]) {
+        draw_pixel(x, y, texture[(texture_width * tex_y) + tex_x]);
+        
+        // Update z-buffer with the 1/w of the current pixel
+        z_buffer[place_in_buffer(x, y)] = interpolated_reciprocal_w;
+    }
 }
 
 void draw_textured_triangle(
