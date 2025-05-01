@@ -8,7 +8,9 @@
 #include "light.h"
 #include "vector.h"
 #include "matrix.h"
+#include "triangle.h"
 #include "mesh.h"
+#include "texture.h"
 
 // Array of triangles to render frame by frame
 // pointer in memory to the first position of array
@@ -25,6 +27,8 @@ enum render_modes {
     RENDER_WIRE_VERTEX,
     RENDER_WIRE_SOLID,
     RENDER_SOLID,
+    RENDER_TEXTURED,
+    RENDER_TEXTURED_WIRE
 };
 
 enum cull_modes {
@@ -62,6 +66,9 @@ bool setup(void) {
     float zfar = 100.0;
     projection_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
+    mesh_texture = (uint32_t*)REDBRICK_TEXTURE;
+    texture_width = 64;
+    texture_height = 64;
     // load_obj_file_data("./assets/cube.obj");
     load_obj_file_data("./assets/f22.obj");
 
@@ -89,6 +96,10 @@ void process_input(void) {
                 render_mode = RENDER_SOLID;
                 else if (event.key.keysym.sym == SDLK_4) 
                 render_mode = RENDER_WIRE_SOLID;
+                else if (event.key.keysym.sym == SDLK_5) 
+                render_mode = RENDER_TEXTURED;
+                else if (event.key.keysym.sym == SDLK_6) 
+                render_mode = RENDER_TEXTURED_WIRE;
             else if (event.key.keysym.sym == SDLK_c) {
                 cull_mode = CULL_BACKFACE;
             }
@@ -235,6 +246,11 @@ void update(void) {
                 { projected_points[1].x, projected_points[1].y },
                 { projected_points[2].x, projected_points[2].y },
             },
+            .texcoords = {
+                { mesh_face.a_uv.u, mesh_face.a_uv.v },
+                { mesh_face.b_uv.u, mesh_face.b_uv.v },
+                { mesh_face.c_uv.u, mesh_face.c_uv.v },
+            },
             .color = triangle_color,
             .avg_depth = avg_depth
         };
@@ -271,13 +287,6 @@ void render(void) {
     for (int i = 0; i < num_triangles; i++) {
         triangle_t triangle = triangles_to_render[i];
 
-        enum Render_Modes {
-            WIREFRAME_VERTEX,
-            WIREFRAME_ONLY,
-            SOLID,
-            WIREFRAME_SOLID
-        };
-
         int rm = (int)render_mode;
 
         if (rm == RENDER_SOLID || rm == RENDER_WIRE_SOLID) {
@@ -289,7 +298,16 @@ void render(void) {
             );
         }
 
-        if (rm == RENDER_WIRE || rm == RENDER_WIRE_VERTEX || rm == RENDER_WIRE_SOLID) {
+        if (rm == RENDER_TEXTURED || rm == RENDER_TEXTURED_WIRE) {
+            draw_textured_triangle(
+                triangle.points[0].x, triangle.points[0].y, triangle.texcoords[0].u, triangle.texcoords[0].v,
+                triangle.points[1].x, triangle.points[1].y, triangle.texcoords[1].u, triangle.texcoords[1].v,
+                triangle.points[2].x, triangle.points[2].y, triangle.texcoords[2].u, triangle.texcoords[2].v,
+                mesh_texture
+            );
+        }
+
+        if (rm == RENDER_WIRE || rm == RENDER_WIRE_VERTEX || rm == RENDER_WIRE_SOLID || rm == RENDER_TEXTURED_WIRE) {
             draw_wireframe(triangle, WHITE);
         }
 
