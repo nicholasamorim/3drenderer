@@ -47,6 +47,4 @@ void vec3_normalize(vec3_t* v);
 
 vec4_t vec4_from_vec3(vec3_t v);
 vec3_t vec3_from_vec4(vec4_t v);
-
-vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p);
 #endif
