@@ -100,21 +100,36 @@ void process_input(void) {
             }
             else if (event.key.keysym.sym == SDLK_1) 
                 render_mode = RENDER_WIRE_VERTEX;
-                else if (event.key.keysym.sym == SDLK_2) 
+            else if (event.key.keysym.sym == SDLK_2) 
                 render_mode = RENDER_WIRE;
-                else if (event.key.keysym.sym == SDLK_3) 
+            else if (event.key.keysym.sym == SDLK_3) 
                 render_mode = RENDER_SOLID;
-                else if (event.key.keysym.sym == SDLK_4) 
+            else if (event.key.keysym.sym == SDLK_4) 
                 render_mode = RENDER_WIRE_SOLID;
-                else if (event.key.keysym.sym == SDLK_5) 
+            else if (event.key.keysym.sym == SDLK_5) 
                 render_mode = RENDER_TEXTURED;
-                else if (event.key.keysym.sym == SDLK_6) 
+            else if (event.key.keysym.sym == SDLK_6) 
                 render_mode = RENDER_TEXTURED_WIRE;
             else if (event.key.keysym.sym == SDLK_c) {
                 cull_mode = CULL_BACKFACE;
             }
-            else if (event.key.keysym.sym == SDLK_d) {
+            else if (event.key.keysym.sym == SDLK_x) {
                 cull_mode = CULL_NONE;
+            }
+            else if (event.key.keysym.sym == SDLK_UP) {
+                camera.position.y += 3.0 * delta_time;
+            } else if (event.key.keysym.sym == SDLK_DOWN) {
+                camera.position.y -= 3.0 * delta_time;
+            } else if (event.key.keysym.sym == SDLK_a) {
+                camera.yaw_angle += 1.0 * delta_time;
+            } else if (event.key.keysym.sym == SDLK_d) {
+                camera.yaw_angle -= 1.0 * delta_time;
+            } else if (event.key.keysym.sym == SDLK_w) {
+                camera.forward_velocity = vec3_mul(camera.direction, 5.0 * delta_time);
+                camera.position = vec3_add(camera.position, camera.forward_velocity);
+            } else if (event.key.keysym.sym == SDLK_s) {
+                camera.forward_velocity = vec3_mul(camera.direction, 5.0 * delta_time);
+                camera.position = vec3_sub(camera.position, camera.forward_velocity);
             };
             break;
     }
@@ -140,15 +155,20 @@ void update(void) {
     mesh.rotation.x += 0.6 * delta_time;
     mesh.rotation.y += 0.6 * delta_time;
     mesh.rotation.z += 0.6 * delta_time;
-    
     mesh.translation.z = 4.0;
-    // mesh.scale.x += 0.0002;
-    // mesh.scale.y += 0.0001;
+
     camera.position.x += 0.0 * delta_time;
     camera.position.y += 0.0 * delta_time;
-
-    vec3_t target = { 0, 0, 10 };
+    
+    // Initialize target looking at positive z-axis
+    vec3_t target = { 0, 0, 1 };
+    mat4_t camera_yaw_rotation = mat4_make_rotation_y(camera.yaw_angle);
+    camera.direction = vec3_from_vec4(mat4_mul_vec4(camera_yaw_rotation, vec4_from_vec3(target)));
+    
+    // Offset camera position in the direction the camera is pointing at
+    target = vec3_add(camera.position, camera.direction);
     vec3_t up_direction = {0, 1, 0};
+
     view_matrix = mat4_look_at(camera.position, target, up_direction);
 
     mat4_t scale_matrix = mat4_make_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
