@@ -33,3 +33,10 @@ Transformations are now performed using matrices instead of linear calculations.
 
 
 ![Flat shading](docs/images/progress_day_6.gif)
+
+## Day 7
+
+Loading textures from PNG files and using UVW mapping coordinates to project them.
+
+
+![Flat shading](docs/images/progress_day_7.gif)
