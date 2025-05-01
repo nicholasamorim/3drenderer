@@ -14,11 +14,6 @@ typedef struct {
     float x, y, z, w;
 } vec4_t;
 
-typedef struct {
-    vec3_t position;
-    vec3_t rotation;
-    float fov_angle;
-} camera_t;
 
 
 vec3_t vec3_rotate_z(vec3_t v, float angle);

@@ -8,4 +8,6 @@ typedef struct {
     vec3_t direction;
 } camera_t;
 
+extern camera_t camera;
+
 #endif
