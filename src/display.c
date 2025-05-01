@@ -1,5 +1,6 @@
 #include "color.h"
 #include "display.h"
+#include "triangle.h"
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -52,6 +53,7 @@ int place_in_buffer(int x, int y) {
     return (window_width * y) + x;
 }
 
+
 void draw_pixel(int x, int y, uint32_t color) {
     if (x >= 0 && x < window_width && y >= 0 && y < window_height) {
         color_buffer[place_in_buffer(x, y)] = color;
@@ -86,6 +88,31 @@ void draw_line(int x0, int y0, int x1, int y1, uint32_t color) {
     }
 }
 
+void draw_wireframe(triangle_t triangle, uint32_t color) {
+    draw_triangle(
+        triangle.points[0].x, triangle.points[0].y, 
+        triangle.points[1].x, triangle.points[1].y,
+        triangle.points[2].x, triangle.points[2].y,
+        color
+    );
+}
+
+void draw_vertex_points(triangle_t triangle, uint32_t color) {
+    draw_rect(triangle.points[0].x - 3 , triangle.points[0].y - 3, 6, 6, color);
+    draw_rect(triangle.points[1].x - 3, triangle.points[1].y - 3, 6, 6, color);
+    draw_rect(triangle.points[2].x - 3, triangle.points[2].y - 3, 6, 6, color);
+}
+
+void draw_rect(int x, int y, int width, int height, uint32_t color) {
+    for (int i = 0; i < width; i++) {
+        for (int j =0; j < height; j++) {
+            int current_x = x + i;
+            int current_y = y + j;
+            draw_pixel(current_x, current_y, color);
+        }
+    }
+}
+
 void draw_grid_as_dots(int grid_size) {
     // increments in `grid_size` for more efficient drawing
     for (int y = 0; y < window_height; y += grid_size) {
@@ -105,15 +132,6 @@ void draw_grid_as_lines(int grid_size) {
     }
 }
 
-void draw_rect(int x, int y, int width, int height, uint32_t color) {
-    for (int i = 0; i < width; i++) {
-        for (int j =0; j < height; j++) {
-            int current_x = x + i;
-            int current_y = y + j;
-            draw_pixel(current_x, current_y, color);
-        }
-    }
-}
 
 void render_color_buffer() {
     // Update texture rectangle with new pixel data

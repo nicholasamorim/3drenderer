@@ -171,6 +171,7 @@ void draw_texel(
     interpolated_v /= interpolated_reciprocal_w;
     
     // Map/scale UV coordinate to the full texture width/height
+
     int tex_x = abs((int)(interpolated_u * texture_width)) % texture_width;
     int tex_y = abs((int)(interpolated_v * texture_height)) % texture_height;
 

@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
+#include "triangle.h"
+
 #define FPS 60
 #define FRAME_TARGET_TIME (1000 / FPS)  // 33.3ms
 
@@ -28,5 +30,7 @@ void clear_color_buffer(uint32_t color);
 int place_in_buffer(int x, int y);
 void draw_pixel(int x, int y, uint32_t color);
 void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
+void draw_wireframe(triangle_t triangle, uint32_t color);
+void draw_vertex_points(triangle_t triangle, uint32_t color);
 
 #endif

@@ -264,21 +264,6 @@ void update(void) {
 
 }
 
-void draw_wireframe(triangle_t triangle, uint32_t color) {
-    draw_triangle(
-        triangle.points[0].x, triangle.points[0].y, 
-        triangle.points[1].x, triangle.points[1].y,
-        triangle.points[2].x, triangle.points[2].y,
-        color
-    );
-}
-
-void draw_vertex_points(triangle_t triangle, uint32_t color) {
-    draw_rect(triangle.points[0].x - 3 , triangle.points[0].y - 3, 6, 6, color);
-    draw_rect(triangle.points[1].x - 3, triangle.points[1].y - 3, 6, 6, color);
-    draw_rect(triangle.points[2].x - 3, triangle.points[2].y - 3, 6, 6, color);
-}
-
 void render(void) {
     draw_grid_as_lines(50);
     
