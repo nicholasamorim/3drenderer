@@ -188,6 +188,11 @@ void draw_textured_triangle(
         float_swap(&v0, &v1);
     }
 
+    // flip v component to account for UV coordinates
+    v0 = 1.0 - v0;
+    v1 = 1.0 - v1;
+    v2 = 1.0 - v2;
+
     vec2_t point_a = { x0, y0 };
     vec2_t point_b = { x1, y1 };
     vec2_t point_c = { x2, y2 };

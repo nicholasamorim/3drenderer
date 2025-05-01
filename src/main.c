@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+
 #include <SDL2/SDL.h>
+
 #include "array.h"
 #include "color.h"
 #include "display.h"
 #include "light.h"
-#include "vector.h"
 #include "matrix.h"
-#include "triangle.h"
 #include "mesh.h"
 #include "texture.h"
+#include "triangle.h"
+#include "vector.h"
+#include "upng.h"
 
 // Array of triangles to render frame by frame
 // pointer in memory to the first position of array
@@ -49,7 +52,7 @@ bool setup(void) {
     // Create a SDL Texture for the color display
     color_buffer_texture = SDL_CreateTexture(
         renderer,
-        SDL_PIXELFORMAT_ARGB8888,
+        SDL_PIXELFORMAT_RGBA32,
         SDL_TEXTUREACCESS_STREAMING,
         window_width,
         window_height
@@ -66,12 +69,9 @@ bool setup(void) {
     float zfar = 100.0;
     projection_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
-    mesh_texture = (uint32_t*)REDBRICK_TEXTURE;
-    texture_width = 64;
-    texture_height = 64;
-    // load_obj_file_data("./assets/cube.obj");
-    load_obj_file_data("./assets/f22.obj");
-
+    load_obj_file_data("./assets/cube.obj");
+    load_png_texture_data("./assets/cube.png");
+    // load_obj_file_data("./assets/f22.obj");
     return true;
 }
 
@@ -144,7 +144,7 @@ void update(void) {
 
     // Test transformations
     mesh.rotation.x += 0.005;
-    mesh.rotation.y += 0.01;
+    // mesh.rotation.y += 0.01;
     // mesh.rotation.z += 0.01;
     // mesh.translation.x += 0.01;
     mesh.translation.z = 5.0;
@@ -164,9 +164,9 @@ void update(void) {
         face_t mesh_face = mesh.faces[i];
         
         vec3_t face_vertices[3];
-        face_vertices[0] = mesh.vertices[mesh_face.a - 1];
-        face_vertices[1] = mesh.vertices[mesh_face.b - 1];
-        face_vertices[2] = mesh.vertices[mesh_face.c - 1];
+        face_vertices[0] = mesh.vertices[mesh_face.a];
+        face_vertices[1] = mesh.vertices[mesh_face.b];
+        face_vertices[2] = mesh.vertices[mesh_face.c];
 
         vec4_t transformed_vertices[3];
     
@@ -329,6 +329,7 @@ void free_resources(void) {
     free(color_buffer);
     array_free(mesh.faces);
     array_free(mesh.vertices);
+    upng_free(png);
 }
 
 
