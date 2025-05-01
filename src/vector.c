@@ -154,3 +154,28 @@ vec3_t vec3_from_vec4(vec4_t v) {
     vec3_t result = { v.x, v.y, v.z };
     return result; 
 }
+
+/*
+To find the weights, we use some formulas to find alpha, beta and gamma.
+a = || PC x PB || / || AC x AB ||
+b = || AC x AP || / || AC x AB ||
+y = 1 - a - b
+*/
+vec3_t barycentric_weights(vec2_t a, vec2_t b, vec2_t c, vec2_t p) {
+    // Getting vector A to C means subtracting C from A 
+    vec2_t ac = vec2_sub(c, a);
+    vec2_t ab = vec2_sub(b, a);
+    vec2_t pc = vec2_sub(c, p);
+    vec2_t pb = vec2_sub(b, p);
+    vec2_t ap = vec2_sub(p, a);
+
+    // Geting cross product of AC x AB (|| AC x AB ||)
+    float area_parallelogram_abc = (ac.x * ab.y - ac.y * ab.x);
+
+    float alpha = (pc.x * pb.y - pc.y * pb.x) / area_parallelogram_abc;
+    float beta = (ac.x * ap.y - ac.y * ap.x) / area_parallelogram_abc;
+    float gamma = 1.0 - alpha - beta;
+
+    vec3_t weights = { alpha, beta, gamma };
+    return weights;
+}
