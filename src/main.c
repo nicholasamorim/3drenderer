@@ -118,22 +118,6 @@ void process_input(void) {
 }
 
 
-void sort_by_depth(triangle_t* array) {
-    int num_triangles = array_length(array);
-
-    // Bubble sort by avg depth
-    for (int i = 0; i < num_triangles; ++i) {
-        for (int j = i; j < num_triangles; j++) {
-            if (array[i].avg_depth < array[j].avg_depth) {
-                triangle_t temp = triangles_to_render[i];
-                array[i] = array[j];
-                array[j] = temp;
-            }
-        }
-    }
-}
-
-
 void update(void) {
     // Wait until FRAME_TARGET_TIME passes ensuring consistent FPS
     // int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
@@ -233,12 +217,6 @@ void update(void) {
             projected_points[j].y += (window_height / 2.0);
         }
 
-        // Calculate average depth for each face based on their Z values
-        float avg_depth = (
-            transformed_vertices[0].z + 
-            transformed_vertices[1].z + 
-            transformed_vertices[2].z) / 3.0;
-
         // Calculate color based on light angle
         float light_intensity_factor = -vec3_dot(normal, light.direction);
         uint32_t triangle_color = light_apply_intensity(mesh_face.color, light_intensity_factor);
@@ -254,8 +232,7 @@ void update(void) {
                 { mesh_face.b_uv.u, mesh_face.b_uv.v },
                 { mesh_face.c_uv.u, mesh_face.c_uv.v },
             },
-            .color = triangle_color,
-            .avg_depth = avg_depth
+            .color = triangle_color 
         };
     
         // Save projected triangle in the array of triangles to render
@@ -264,10 +241,7 @@ void update(void) {
             num_triangles_to_render++;
         }
     }
-
-    // Sort the triangles to render by their avg_depth
-    sort_by_depth(triangles_to_render);
-
+ 
 }
 
 void render(void) {
@@ -281,9 +255,9 @@ void render(void) {
 
         if (rm == RENDER_SOLID || rm == RENDER_WIRE_SOLID) {
             draw_filled_triangle(
-                triangle.points[0].x, triangle.points[0].y, 
-                triangle.points[1].x, triangle.points[1].y,
-                triangle.points[2].x, triangle.points[2].y,
+                triangle.points[0].x, triangle.points[0].y, triangle.points[0].z, triangle.points[0].w, 
+                triangle.points[1].x, triangle.points[1].y, triangle.points[1].z, triangle.points[2].w,
+                triangle.points[2].x, triangle.points[2].y, triangle.points[1].z, triangle.points[2].w,
                 triangle.color
             );
         }
