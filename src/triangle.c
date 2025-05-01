@@ -171,8 +171,8 @@ void draw_texel(
     interpolated_v /= interpolated_reciprocal_w;
     
     // Map/scale UV coordinate to the full texture width/height
-    int tex_x = abs((int)interpolated_u * texture_width);
-    int tex_y = abs((int)interpolated_v * texture_height);
+    int tex_x = abs((int)(interpolated_u * texture_width)) % texture_width;
+    int tex_y = abs((int)(interpolated_v * texture_height)) % texture_height;
 
     draw_pixel(x, y, texture[(texture_width * tex_y) + tex_x]);
 }
@@ -229,7 +229,7 @@ void draw_textured_triangle(
     if (y1 - y0 != 0){
         inv_slope_1 = (float)(x1 - x0) / abs(y1 - y0);
     }
-    if (y1 - y0 != 0) {
+    if (y2 - y0 != 0) {
         inv_slope_2 = (float)(x2 - x0) / abs(y2 - y0);
     } 
 
@@ -254,17 +254,17 @@ void draw_textured_triangle(
     inv_slope_1 = 0;
     inv_slope_2 = 0;
 
-    if (y1 - y0 != 0){
+    if (y2 - y1 != 0){
         inv_slope_1 = (float)(x2 - x1) / abs(y2 - y1);
     }
-    if (y1 - y0 != 0) {
+    if (y2 - y0 != 0) {
         inv_slope_2 = (float)(x2 - x0) / abs(y2 - y0);
     } 
 
     if (y2 - y1 != 0) { 
         for (int y = y1; y <= y2; y++) {
             int x_start = x1 + (y - y1) * inv_slope_1;
-                int x_end = x0 + (y - y0) * inv_slope_2;
+            int x_end = x0 + (y - y0) * inv_slope_2;
             
             if (x_end < x_start) {
                 // make sure x_start is always to the left
