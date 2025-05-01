@@ -39,4 +39,6 @@ Transformations are now performed using matrices instead of linear calculations.
 Loading textures from PNG files and using UVW mapping coordinates to project them.
 
 
-![Flat shading](docs/images/progress_day_7.gif)
+![uv](docs/images/progress_day_7.gif)
+
+![uv2](docs/images/progress_day_7_2.gif)

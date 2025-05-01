@@ -69,9 +69,13 @@ bool setup(void) {
     float zfar = 100.0;
     projection_matrix = mat4_make_perspective(fov, aspect, znear, zfar);
 
-    load_obj_file_data("./assets/cube.obj");
-    load_png_texture_data("./assets/cube.png");
+    // load_obj_file_data("./assets/cube.obj");
+    // load_png_texture_data("./assets/cube.png");
     // load_obj_file_data("./assets/f22.obj");
+    // load_png_texture_data("./assets/f22.png");
+    
+    load_obj_file_data("./assets/drone.obj");
+    load_png_texture_data("./assets/drone.png");
     return true;
 }
 
@@ -144,7 +148,7 @@ void update(void) {
 
     // Test transformations
     mesh.rotation.x += 0.005;
-    // mesh.rotation.y += 0.01;
+    // mesh.rotation.y += 0.1;
     // mesh.rotation.z += 0.01;
     // mesh.translation.x += 0.01;
     mesh.translation.z = 5.0;
@@ -214,9 +218,6 @@ void update(void) {
         vec4_t projected_points[3];
         for (int j = 0; j < 3; j++) {
             projected_points[j] = mat4_mul_vec4_project(projection_matrix, transformed_vertices[j]);
-
-            // Flip vertically since the y values of the 3D mesh grow bottom->up and in screen space y values grow top->down
-            projected_points[j].y *= -1;
 
             // Scale into view
             projected_points[j].x *= (window_width / 2.0);
