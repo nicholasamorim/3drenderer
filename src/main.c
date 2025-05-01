@@ -17,7 +17,9 @@
 
 // Array of triangles to render frame by frame
 // pointer in memory to the first position of array
-triangle_t* triangles_to_render = NULL;
+#define MAX_TRIANGLES_PER_MESH 10000
+triangle_t triangles_to_render[MAX_TRIANGLES_PER_MESH];
+int num_triangles_to_render = 0;
 
 vec3_t camera_position = { 0, 0, 0 };
 mat4_t projection_matrix;
@@ -144,8 +146,7 @@ void update(void) {
 
     previous_frame_time = SDL_GetTicks();
 
-    // Init array of triangles for the frame
-    triangles_to_render = NULL;
+    num_triangles_to_render = 0;
 
     // Test transformations
     mesh.rotation.x += 0.005;
@@ -258,7 +259,10 @@ void update(void) {
         };
     
         // Save projected triangle in the array of triangles to render
-        array_push(triangles_to_render, projected_triangle);
+        if (num_triangles_to_render < MAX_TRIANGLES_PER_MESH) {
+            triangles_to_render[num_triangles_to_render] = projected_triangle;
+            num_triangles_to_render++;
+        }
     }
 
     // Sort the triangles to render by their avg_depth
@@ -270,8 +274,7 @@ void render(void) {
     draw_grid_as_lines(50);
     
     // loop projected points and render
-    int num_triangles = array_length(triangles_to_render);
-    for (int i = 0; i < num_triangles; i++) {
+    for (int i = 0; i < num_triangles_to_render; i++) {
         triangle_t triangle = triangles_to_render[i];
 
         int rm = (int)render_mode;
@@ -302,9 +305,6 @@ void render(void) {
             draw_vertex_points(triangle, RED);
         }
     }
-
-    // Clear array of triangles to render every loop
-    array_free(triangles_to_render);
 
     render_color_buffer();
 
