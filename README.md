@@ -6,9 +6,13 @@ My personal goal is to understand the basics of the math underlying the 3D world
 
 This code is the direct result of completing the [3D Computer Graphics Programming](https://pikuma.com/courses/learn-3d-computer-graphics-programming) course by [Pikuma](https://pikuma.com).
 
+Note that this has been developed and tested exclusively on macOS.
+
 # Usage
 
 ```
+# Ensure you have SDL2 installed
+$ brew install sdl2
 $ make build
 # Renders the drone.obj file
 $ ./renderer 
