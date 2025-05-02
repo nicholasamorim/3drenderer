@@ -4,6 +4,8 @@ This is a study project on writing an extremely simple 3D renderer using only C 
 
 My personal goal is to understand the basics of the math underlying the 3D world (vectors, matrices) so to apply this knowledge in packages like Houdini and be able to perform complex operations using VEX. 
 
+This code is the direct result of completing the [3D Computer Graphics Programming](https://pikuma.com/courses/learn-3d-computer-graphics-programming) course by [Pikuma](https://pikuma.com).
+
 # Usage
 
 ```
