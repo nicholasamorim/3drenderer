@@ -31,12 +31,6 @@ bool is_running = false;
 int previous_frame_time = 0;
 float delta_time = 0;
 
-enum render_modes render_method = RENDER_WIRE;
-enum cull_modes cull_method = CULL_BACKFACE;
-
-
-bool backface_culling =  true;
-
 bool setup(void) {
     int window_width = get_window_width();
     int window_height = get_window_height();
@@ -299,37 +293,6 @@ void update(void) {
     }
 }
 
-bool should_render_solid() {
-    if (render_method == RENDER_SOLID || render_method == RENDER_WIRE_SOLID) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool should_render_texture() {
-    if (render_method == RENDER_TEXTURED || render_method == RENDER_TEXTURED_WIRE) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool should_render_wireframe() {
-    if (render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX || render_method == RENDER_WIRE_SOLID || render_method == RENDER_TEXTURED_WIRE) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool should_render_wire_vertex() {
-    if (render_method == RENDER_WIRE_VERTEX) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
 void render(void) {
     clear_color_buffer(0xFF000000);

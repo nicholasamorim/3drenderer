@@ -29,12 +29,19 @@ enum cull_modes {
     CULL_BACKFACE
 };
 
+static int render_method;
+static int cull_method;
+
 
 extern SDL_Texture* color_buffer_texture; // used to display color buffer
 extern uint32_t grid_color;
 
 int get_window_width(void);
 int get_window_height(void);
+int get_render_method(void);
+void set_render_method(int method);
+int get_cull_method(void);
+void set_cull_method(int method);
 bool initialize_window(void);
 void draw_rect(int x, int y, int width, int height, uint32_t color);
 void draw_grid_as_dots(int grid_size);
@@ -50,4 +57,10 @@ void draw_wireframe(triangle_t triangle, uint32_t color);
 void draw_vertex_points(triangle_t triangle, uint32_t color);
 float get_zbuffer_at(int x, int y);
 void update_zbuffer_at(int x, int y, float value);
+
+bool should_render_solid(void);
+bool should_render_texture(void);
+bool should_render_wireframe(void);
+bool should_render_wire_vertex(void);
+
 #endif

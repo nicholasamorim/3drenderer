@@ -12,6 +12,26 @@ SDL_Texture* color_buffer_texture = NULL;
 static int window_width = 800;
 static int window_height = 600;
 
+static int render_method = RENDER_WIRE;
+static int cull_method = CULL_BACKFACE;
+
+
+int get_render_method(void) {
+    return render_method;
+}
+
+void set_render_method(int method) {
+    render_method = method;
+}
+
+int get_cull_method(void) {
+    return cull_method;
+}
+
+void set_cull_method(int method) {
+    cull_method = method;
+}
+
 int get_window_width(void) {
     return window_width;
 }
@@ -201,4 +221,37 @@ void update_zbuffer_at(int x, int y, float value) {
     }
 
     z_buffer[place_in_buffer(x, y)] = value;
+}
+
+
+bool should_render_solid() {
+    if (render_method == RENDER_SOLID || render_method == RENDER_WIRE_SOLID) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool should_render_texture() {
+    if (render_method == RENDER_TEXTURED || render_method == RENDER_TEXTURED_WIRE) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool should_render_wireframe() {
+    if (render_method == RENDER_WIRE || render_method == RENDER_WIRE_VERTEX || render_method == RENDER_WIRE_SOLID || render_method == RENDER_TEXTURED_WIRE) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool should_render_wire_vertex() {
+    if (render_method == RENDER_WIRE_VERTEX) {
+        return true;
+    } else {
+        return false;
+    }
 }
