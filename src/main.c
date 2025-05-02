@@ -48,14 +48,9 @@ bool setup(void) {
 
     // Initialize frustum planes with a point and a normal
     init_frustum_planes(fov_x, fov_y, z_near, z_far);
-
-    load_obj_file_data("./assets/cube.obj");
-    load_png_texture_data("./assets/cube.png");
-    // load_obj_file_data("./assets/f22.obj");
-    // load_png_texture_data("./assets/f22.png");
     
-    // load_obj_file_data("./assets/drone.obj");
-    // load_png_texture_data("./assets/drone.png");
+    load_obj_file_data("./assets/drone.obj");
+    load_png_texture_data("./assets/drone.png");
     return true;
 }
 
@@ -69,46 +64,55 @@ void process_input(void) {
                 is_running = false;
                 break;
             case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    is_running = false;
-                    break;
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        is_running = false;
+                        break;
+                    case SDLK_1:
+                        set_render_method(RENDER_WIRE_VERTEX);
+                        break;
+                    case SDLK_2:
+                        set_render_method(RENDER_WIRE);    
+                        break;
+                    case SDLK_3:
+                        set_render_method(RENDER_SOLID);    
+                        break;
+                    case SDLK_4:
+                        set_render_method(RENDER_WIRE_SOLID);    
+                        break;
+                    case SDLK_5:
+                        set_render_method(RENDER_TEXTURED);    
+                        break;
+                    case SDLK_6:
+                        set_render_method(RENDER_TEXTURED_WIRE);    
+                        break;
+                    case SDLK_c:
+                        set_cull_method(CULL_BACKFACE);
+                        break;
+                    case SDLK_x:
+                        set_cull_method(CULL_NONE);
+                        break;
+                    case SDLK_UP:
+                        update_camera_forward_velocity(vec3_mul(get_camera_direction(), 5.0 * delta_time));
+                        update_camera_position(vec3_add(get_camera_position(), get_camera_forward_velocity()));
+                        break;
+                    case SDLK_DOWN:
+                        update_camera_forward_velocity(vec3_mul(get_camera_direction(), 5.0 * delta_time));
+                        update_camera_position(vec3_sub(get_camera_position(), get_camera_forward_velocity()));
+                        break;
+                    case SDLK_LEFT:
+                        rotate_camera_yaw(-1.0 * delta_time);
+                        break;
+                    case SDLK_RIGHT:
+                        rotate_camera_yaw(1.0 * delta_time);
+                        break;
+                    case SDLK_w:
+                        rotate_camera_pitch(3.0 * delta_time);
+                        break;
+                    case SDLK_s:
+                        rotate_camera_pitch(-3.0 * delta_time);
+                        break;
                 }
-                else if (event.key.keysym.sym == SDLK_1) 
-                    render_method = RENDER_WIRE_VERTEX;
-                else if (event.key.keysym.sym == SDLK_2) 
-                    render_method = RENDER_WIRE;
-                else if (event.key.keysym.sym == SDLK_3) 
-                    render_method = RENDER_SOLID;
-                else if (event.key.keysym.sym == SDLK_4) 
-                    render_method = RENDER_WIRE_SOLID;
-                else if (event.key.keysym.sym == SDLK_5) 
-                    render_method = RENDER_TEXTURED;
-                else if (event.key.keysym.sym == SDLK_6) 
-                    render_method = RENDER_TEXTURED_WIRE;
-                else if (event.key.keysym.sym == SDLK_c) {
-                    cull_method = CULL_BACKFACE;
-                }
-                else if (event.key.keysym.sym == SDLK_x) {
-                    cull_method = CULL_NONE;
-                }
-                else if (event.key.keysym.sym == SDLK_UP) {
-                    update_camera_forward_velocity(vec3_mul(get_camera_direction(), 5.0 * delta_time));
-                    update_camera_position(vec3_add(get_camera_position(), get_camera_forward_velocity()));
-                    break;
-                } else if (event.key.keysym.sym == SDLK_DOWN) {
-                    update_camera_forward_velocity(vec3_mul(get_camera_direction(), 5.0 * delta_time));
-                    update_camera_position(vec3_sub(get_camera_position(), get_camera_forward_velocity()));
-                } else if (event.key.keysym.sym == SDLK_LEFT) {
-                    rotate_camera_yaw(-1.0 * delta_time);
-                    break;
-                } else if (event.key.keysym.sym == SDLK_RIGHT) {
-                    rotate_camera_yaw(+1.0 * delta_time);
-                    break;
-                } else if (event.key.keysym.sym == SDLK_w) {
-                    rotate_camera_pitch(3.0 * delta_time);
-                } else if (event.key.keysym.sym == SDLK_s) {
-                    rotate_camera_pitch(-3.0 * delta_time);
-                };
                 break;
         }
     }
