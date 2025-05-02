@@ -17,6 +17,17 @@
 #include "vector.h"
 #include "upng.h"
 
+#include "argparse.h"
+
+static const char *const usages[] = {
+    "basic [options] [[--] args]",
+    "basic [options]",
+    NULL,
+};
+
+char *mesh_filename = "./assets/drone.obj";
+char *texture_filename = "./assets/drone.png";
+
 // Array of triangles to render frame by frame
 // pointer in memory to the first position of array
 #define MAX_TRIANGLES 10000
@@ -49,8 +60,8 @@ bool setup(void) {
     // Initialize frustum planes with a point and a normal
     init_frustum_planes(fov_x, fov_y, z_near, z_far);
     
-    load_obj_file_data("./assets/drone.obj");
-    load_png_texture_data("./assets/drone.png");
+    load_obj_file_data(mesh_filename);
+    load_png_texture_data(texture_filename);
     return true;
 }
 
@@ -345,8 +356,26 @@ void free_resources(void) {
 }
 
 
-int main(void) {
+
+int main(int argc, const char **argv) {
     is_running = initialize_window();
+
+    struct argparse_option options[] = {
+        OPT_HELP(),
+        OPT_GROUP("Basic options"),
+        OPT_STRING('o', "obj", &mesh_filename, "Path to .OBJ model", NULL, 0, 0),
+        OPT_STRING('t', "texture", &texture_filename, "Path to PNG texture", NULL, 0, 0),
+        OPT_END(),
+    };
+
+    struct argparse argparse;
+    argparse_init(&argparse, options, usages, 0);
+    argparse_describe(&argparse, "\nThe most basic 3D renderer possible.", "\nCreated with the help of pikuma.com");
+    argc = argparse_parse(&argparse, argc, argv);
+
+
+    printf("Loading %s\n", mesh_filename);
+    printf("Loading %s\n", texture_filename);
 
     if  (!setup()) {
         return 1;

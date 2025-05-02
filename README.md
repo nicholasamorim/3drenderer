@@ -1,11 +1,18 @@
 # 3drenderer
-Learning how to write a 3D Renderer
 
-Studying math just for the sake of it never worked for me.
-
-This is a study project on writing a simple renderer using only C and SDL2. The goal is to write a complete software rasterizer from scratch: textures, camera, clipping, loading objects all pixel per pixel, triangle by triangle and face by face.
+This is a study project on writing an extremely simple 3D renderer using only C and SDL2. The goal is to write a complete software rasterizer from scratch: textures, camera, clipping, loading objects all pixel per pixel, triangle by triangle and face by face.
 
 My personal goal is to understand the basics of the math underlying the 3D world (vectors, matrices) so to apply this knowledge in packages like Houdini and be able to perform complex operations using VEX. 
+
+# Usage
+
+```
+$ make build
+# Renders the drone.obj file
+$ ./renderer 
+# Renders an arbitrary model
+$ ./renderer -o ./assets/cube.obj -t ./assets/cube.png
+```
 
 
 # Progress
@@ -43,3 +50,7 @@ Loading textures from PNG files and using UVW mapping coordinates to project the
 
 ![uv2](docs/images/progress_day_7_2.gif)
 
+
+## Day 8
+
+Implemented camera FPS-style control using the arrow keys. Model translation possible using W, A, S and D. Implemented clipping and a basic argument parser.
