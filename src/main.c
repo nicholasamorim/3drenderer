@@ -40,23 +40,6 @@ bool backface_culling =  true;
 bool setup(void) {
     int window_width = get_window_width();
     int window_height = get_window_height();
-    // Allocate required bytes for the color buffer
-    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
-    z_buffer = (float *)malloc(sizeof(float) * window_width * window_height);
-    
-    // Create a SDL Texture for the color display
-    color_buffer_texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_RGBA32,
-        SDL_TEXTUREACCESS_STREAMING,
-        window_width,
-        window_height
-    );
-
-    if (!color_buffer) {
-        fprintf(stderr, "Cannow create color buffer");
-        return false;
-    }
 
     // Initialize the perspective projection matrix
     float aspect_y = (float)window_height / (float)window_width;
@@ -349,8 +332,9 @@ bool should_render_wire_vertex() {
 }
 
 void render(void) {
-    SDL_RenderClear(renderer);
-
+    clear_color_buffer(0xFF000000);
+    clear_z_buffer();
+    
     draw_grid_as_lines(50);
     
     // loop projected points and render
@@ -385,16 +369,9 @@ void render(void) {
     }
 
     render_color_buffer();
-
-    clear_color_buffer(BLACK);
-    clear_z_buffer();
-
-    SDL_RenderPresent(renderer);
 }
 
 void free_resources(void) {
-    free(color_buffer);
-    free(z_buffer);
     array_free(mesh.faces);
     array_free(mesh.vertices);
     upng_free(png);

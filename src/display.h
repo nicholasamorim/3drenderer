@@ -48,5 +48,6 @@ void draw_pixel(int x, int y, uint32_t color);
 void draw_line(int x0, int y0, int x1, int y1, uint32_t color);
 void draw_wireframe(triangle_t triangle, uint32_t color);
 void draw_vertex_points(triangle_t triangle, uint32_t color);
-
+float get_zbuffer_at(int x, int y);
+void update_zbuffer_at(int x, int y, float value);
 #endif

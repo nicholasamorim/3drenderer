@@ -53,6 +53,23 @@ bool initialize_window(void) {
         return false;
     }
 
+    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
+    z_buffer = (float *)malloc(sizeof(float) * window_width * window_height);
+    
+    // Create a SDL Texture for the color display
+    color_buffer_texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_STREAMING,
+        window_width,
+        window_height
+    );
+
+    if (!color_buffer) {
+        fprintf(stderr, "Cannow create color buffer");
+        return false;
+    }
+
     return true;
 }
 
@@ -107,25 +124,24 @@ void render_color_buffer(void) {
         (int)(window_width * sizeof(uint32_t))
     );
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 }
 
 void clear_color_buffer(uint32_t color) {
-    for (int y = 0; y < window_height; y++) {
-        for (int x = 0; x < window_width; x++) {
-            color_buffer[(window_width * y) + x] = color;
-        }
+    for (int i = 0; i < window_width * window_height; i++) {
+        color_buffer[i] = color;
     }
 }
 
 void clear_z_buffer(void) {
-    for (int y = 0; y < window_height; y++) {
-        for (int x = 0; x < window_width; x++) {
-            z_buffer[(window_width * y) + x] = 1.0; 
-        }
+    for (int i = 0; i < window_width * window_height; i++) {
+            z_buffer[i] = 1.0; 
     }
 }
 
 void destroy_window(void) {
+    free(color_buffer);
+    free(z_buffer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -169,4 +185,20 @@ void draw_grid_as_lines(int grid_size) {
             }
         }
     }
+}
+
+float get_zbuffer_at(int x, int y) {
+    if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
+        return 1.0;
+    }
+
+    return z_buffer[place_in_buffer(x, y)];
+}
+
+void update_zbuffer_at(int x, int y, float value) {
+    if (x < 0 || x >= window_width || y < 0 || y >= window_height) {
+        return;
+    }
+
+    z_buffer[place_in_buffer(x, y)] = value;
 }
